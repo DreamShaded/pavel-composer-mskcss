@@ -1,0 +1,73 @@
+/* Нуарный слой поверх темы moscowcss: дело, улики, бирки. Мельче 1rem не опускаемся. */
+
+.slidev-layout .case {
+  display: grid;
+  grid-template-columns: 17rem 1fr;
+  gap: 2.75rem;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.slidev-layout .case__text {
+  max-width: 30rem;
+}
+
+.slidev-layout .case__text p {
+  margin-bottom: 1rem;
+}
+
+.slidev-layout .case__meta {
+  display: block;
+  margin-bottom: 0.75rem;
+  color: var(--mc-muted);
+  font: 500 1rem/1.4 var(--mc-font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.slidev-layout .quote {
+  margin: 0 0 1rem;
+  font: 500 1.75rem/1.3 var(--mc-font-title);
+}
+
+.slidev-layout .quote::before { content: "«"; color: var(--mc-red); }
+.slidev-layout .quote::after { content: "»"; color: var(--mc-red); }
+
+.slidev-layout .versions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem 2rem;
+  align-items: center;
+  justify-content: center;
+  height: 70%;
+}
+
+.slidev-layout .versions .mc-pill {
+  font-size: 2.25rem;
+  padding: 0.6rem 1.6rem;
+}
+
+.slidev-layout .pair {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 0.75rem;
+  align-items: center;
+  margin-bottom: 0.9rem;
+}
+
+.slidev-layout .pair__arrow {
+  color: var(--mc-red);
+  font: 700 1.5rem/1 var(--mc-font-mono);
+}
+
+.slidev-layout .dies {
+  font: 700 3rem/1 var(--mc-font-display);
+  letter-spacing: 0.12em;
+  color: var(--mc-red);
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.slidev-layout .answer {
+  margin-top: 1.5rem;
+}

@@ -1,0 +1,17 @@
+{
+  "name": "pavel-composer-mskcss",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "slidev build",
+    "dev": "node ../scripts/slidev-dev.mjs .",
+    "export": "slidev export",
+    "clips": "bash scripts/cut-clips.sh",
+    "build:pages": "slidev build --base /pavel-composer-mskcss/ --router-mode hash --without-notes"
+  },
+  "dependencies": {
+    "@slidev/cli": "^52.6.0",
+    "vue": "^3.5.22"
+  },
+  "packageManager": "pnpm@12.18.0"
+}

@@ -1,0 +1,33 @@
+{
+  "name": "slidev-theme-moscowcss",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "keywords": [
+    "slidev-theme",
+    "slidev"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "dev": "node ../scripts/slidev-dev.mjs . example.md",
+    "build": "slidev build example.md",
+    "export": "slidev export example.md",
+    "screenshot": "slidev export example.md --format png"
+  },
+  "devDependencies": {
+    "@slidev/cli": "^52.6.0"
+  },
+  "//": "Тема по мотивам css.moscow: токены и шрифты взяты из @moscowcss/design-system и @moscowcss/fonts.",
+  "slidev": {
+    "colorSchema": "both",
+    "defaults": {
+      "fonts": {
+        "sans": "Golos Text",
+        "mono": "JetBrains Mono",
+        "provider": "none"
+      }
+    }
+  }
+}

@@ -1,0 +1,4 @@
+node_modules/
+dist/
+# Исходники видео (≈600 МБ) в git не храним; клипы из них собирает `pnpm clips`.
+videos/
