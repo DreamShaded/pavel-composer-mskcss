@@ -2,6 +2,7 @@
 # Нарезка клипов из исходников ./videos в ./public/clips (H.264 ≤720p, AAC, faststart).
 # Идемпотентно: существующий клип пропускается; FORCE=1 пересобирает всё.
 # Таймкоды — из Plan.md; где Павел их не дал, взято начало трека (помечено «assumed»).
+# Старты сдвинуты за тишину в начале (silencedetect -40dB, запас 0.3 с перед музыкой).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 SRC=videos
@@ -19,15 +20,15 @@ CLIPS=(
   "glebov-adagio|Глебов Адажио.mp4|0|60"                                       # assumed
   "kashcheevna|Клавдия Кудряшова ｜ Ария Кащеевны.mp4|264|60"
   "prokofiev-march|Сергей Прокофьев. Марш из оперы 'Любовь к трем апельсинам'. Дирижер Геннадий Рождественский (1984).mp4|0|0"
-  "imperial-march|John Williams & Vienna Philharmonic – Williams： Imperial March (from “Star Wars”).mp4|0|60"  # assumed
+  "imperial-march|John Williams & Vienna Philharmonic – Williams： Imperial March (from “Star Wars”).mp4|4|60"  # assumed
   "trepak|П.И.Чайковский. Балет 'Щелкунчик'. Часть дивертисмента - Русский танец 'Трепак'.mp4|0|0"
   "home-alone|Home Alone Soundtrack-02 Holiday Flight.mp4|0|0"
-  "lhomme-arme|L'Homme Arme.mp4|0|0"
-  "de-la-rue-agnus|Pierre de la Rue_ Missa l'Homme arme, Agnus dei (with 4v prolation canon).mp4|0|120"
-  "palestrina-lhomme-arme|Palestrina_ Missa L'Homme Armé.mp4|0|120"
+  "lhomme-arme|L'Homme Arme.mp4|3.1|0"
+  "de-la-rue-agnus|Pierre de la Rue_ Missa l'Homme arme, Agnus dei (with 4v prolation canon).mp4|11|120"
+  "palestrina-lhomme-arme|Palestrina_ Missa L'Homme Armé.mp4|0.9|120"
   "bach-prelude-c|Prelude and Fugue_ No. 1 in C Major, BWV 846.mp4|2|115"     # только прелюдия, фуга с 1:59
-  "ave-maria-bartoli|(1.6.) Ave Maria. Бах-Гуно. Бартоли.mp4|0|0"            # 720p; версия Ковалевой — 480p, 1967
-  "myaskovsky-carmagnole|Nikolai Myaskovsky - Symphony No. 6, Op. 23 (1923).mp4|2792|58"   # 46:32–47:30
+  "ave-maria-bartoli|(1.6.) Ave Maria. Бах-Гуно. Бартоли.mp4|11|0"            # 720p; версия Ковалевой — 480p, 1967
+  "myaskovsky-carmagnole|Nikolai Myaskovsky - Symphony No. 6, Op. 23 (1923).mp4|2793.3|56.7"   # 46:32–47:30
   "myaskovsky-ca-ira|Nikolai Myaskovsky - Symphony No. 6, Op. 23 (1923).mp4|2850|60"       # с 47:30, длина assumed
   "figaro-non-piu-andrai|Le Nozze di Figaro - Terfel, Hagley, Gilfry, Martinpelto - Gardiner _ DEU, ENG,.mp4|2470|221"   # 41:10–44:51
   "don-giovanni-figaro|Mozart - Don Giovanni - Cesare Siepi - Wilhelm Furtwängler - Vienna Philharmonic.mp4|9350|82"   # 2:35:50–2:37:12
