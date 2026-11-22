@@ -23,14 +23,22 @@ CLIPS=(
   "imperial-march|John Williams & Vienna Philharmonic – Williams： Imperial March (from “Star Wars”).mp4|0|60"  # assumed
   "trepak|П.И.Чайковский. Балет 'Щелкунчик'. Часть дивертисмента - Русский танец 'Трепак'.mp4|0|0"
   "home-alone|Home Alone Soundtrack-02 Holiday Flight.mp4|0|0"
+  "lhomme-arme|L'Homme Arme.mp4|0|0"
+  "de-la-rue-agnus|Pierre de la Rue_ Missa l'Homme arme, Agnus dei (with 4v prolation canon).mp4|0|120"
+  "palestrina-lhomme-arme|Palestrina_ Missa L'Homme Armé.mp4|0|120"
+  "bach-prelude-c|Prelude and Fugue_ No. 1 in C Major, BWV 846.mp4|2|115"     # только прелюдия, фуга с 1:59
+  "ave-maria-bartoli|(1.6.) Ave Maria. Бах-Гуно. Бартоли.mp4|0|0"            # 720p; версия Ковалевой — 480p, 1967
+  "myaskovsky-carmagnole|Nikolai Myaskovsky - Symphony No. 6, Op. 23 (1923).mp4|2792|58"   # 46:32–47:30
+  "myaskovsky-ca-ira|Nikolai Myaskovsky - Symphony No. 6, Op. 23 (1923).mp4|2850|60"       # с 47:30, длина assumed
+  "myaskovsky-spiritual|Nikolai Myaskovsky - Symphony No. 6, Op. 23 (1923).mp4|3550|0"     # 59:10 и до конца
 )
 
 for row in "${CLIPS[@]}"; do
   IFS='|' read -r slug file start dur <<<"${row%%#*}"
   dur="${dur// /}"
   src="$SRC/$file"; dst="$OUT/$slug.mp4"
-  [[ -f "$src" ]] || { echo "missing source: $src" >&2; exit 1; }
   if [[ -f "$dst" && "${FORCE:-0}" != 1 ]]; then echo "skip $slug"; continue; fi
+  [[ -f "$src" ]] || { echo "missing source: $src" >&2; exit 1; }
   durargs=(); [[ "$dur" != 0 ]] && durargs=(-t "$dur")
   echo "cut $slug (start=${start}s dur=${dur}s)"
   ffmpeg -hide_banner -loglevel error -y -ss "$start" -i "$src" "${durargs[@]}" \
