@@ -48,7 +48,7 @@ clicks: 5
 ---
 layout: default
 kicker: "/ улика 03"
-clicks: 3
+clicks: 2
 ---
 
 # Король, Бах и рак
@@ -68,7 +68,6 @@ clicks: 3
 
 <Gramophone :tracks="[
   { src: '/clips/crab-canon.mp4', label: 'Бах. Канон-рак из «Музыкального приношения»', tone: 'var(--mc-sky)' },
-  { src: '/clips/crab-rave.mp4', label: 'Noisestorm — Crab Rave', tone: 'var(--mc-red)' },
 ]" />
 
 <!--
@@ -77,8 +76,6 @@ clicks: 3
 В нём есть канон-рак, canon cancrizans: один голос играет мелодию с начала, второй — ту же мелодию с конца. Рак, потому что пятится.
 
 [click] Слушаем и смотрим, как ноты сходятся в середине.
-
-[click] А это раки XXI века. Шутка, но и тут мелодия гуляет по интернету тысячами копий.
 
 [click] Возвращаемся к делу.
 -->

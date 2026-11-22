@@ -12,7 +12,6 @@ mkdir -p "$OUT"
 CLIPS=(
   "pifpaf|Пиф-паф - ой-ой-ой. Легендарный мультфильм-пародия (1980).mp4|695|40"
   "crab-canon|Bach's Crab Canon.mp4|0|0"
-  "crab-rave|Noisestorm - Crab Rave [Monstercat Release].mp4|0|30"            # assumed
   "beriozka|Ансамбль Березка Во поле березка стояла Девичий хоровод Beriozka Ensemble Russian Folk Dance Superb.mp4|0|60"  # assumed
   "berlioz-dies-irae|Berlioz： Symphonie fantastique – V. (Dream of a Witches’ Sabbath) – London Philharmonic Orchestra.mp4|167|60"
   "tango|Танго из фильма 'Запах женщины'. Аль Пачино и Габриэль Анвар.mp4|102|60"
@@ -30,6 +29,9 @@ CLIPS=(
   "ave-maria-bartoli|(1.6.) Ave Maria. Бах-Гуно. Бартоли.mp4|0|0"            # 720p; версия Ковалевой — 480p, 1967
   "myaskovsky-carmagnole|Nikolai Myaskovsky - Symphony No. 6, Op. 23 (1923).mp4|2792|58"   # 46:32–47:30
   "myaskovsky-ca-ira|Nikolai Myaskovsky - Symphony No. 6, Op. 23 (1923).mp4|2850|60"       # с 47:30, длина assumed
+  "figaro-non-piu-andrai|Le Nozze di Figaro - Terfel, Hagley, Gilfry, Martinpelto - Gardiner _ DEU, ENG,.mp4|2470|221"   # 41:10–44:51
+  "don-giovanni-figaro|Mozart - Don Giovanni - Cesare Siepi - Wilhelm Furtwängler - Vienna Philharmonic.mp4|9350|82"   # 2:35:50–2:37:12
+  "tchaikovsky-4-mravinsky|П.И.Чайковский. Симфония №4, часть четвёртая. Дирижирует Евгений Мравинский. Зап.mp4|0|300"   # первые 5 минут
   "myaskovsky-spiritual|Nikolai Myaskovsky - Symphony No. 6, Op. 23 (1923).mp4|3550|0"     # 59:10 и до конца
 )
 
