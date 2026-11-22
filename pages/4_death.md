@@ -1,6 +1,6 @@
 ---
 layout: default
-kicker: "/ улика 08"
+kicker: "/ дело №8 · цитаты и смерть"
 clicks: 2
 ---
 

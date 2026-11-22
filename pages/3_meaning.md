@@ -1,6 +1,6 @@
 ---
 layout: default
-kicker: "/ улика 05"
+kicker: "/ дело №5 · цитаты и реклама"
 clicks: 4
 ---
 
@@ -44,7 +44,7 @@ clicks: 4
 
 ---
 layout: default
-kicker: "/ улика 06"
+kicker: "/ дело №6 · цитаты и фольклор"
 clicks: 3
 ---
 
@@ -82,7 +82,7 @@ clicks: 3
 
 ---
 layout: default
-kicker: "/ улика 07"
+kicker: "/ дело №7 · цитаты и революция"
 clicks: 4
 ---
 

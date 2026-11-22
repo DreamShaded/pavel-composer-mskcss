@@ -1,6 +1,6 @@
 ---
 layout: default
-kicker: "/ улика 10"
+kicker: "/ дело №10 · цитаты и кино"
 clicks: 4
 ---
 
@@ -42,7 +42,7 @@ clicks: 4
 
 ---
 layout: default
-kicker: "/ улика 11"
+kicker: "/ дело №11 · цитаты и Рождество"
 clicks: 3
 ---
 

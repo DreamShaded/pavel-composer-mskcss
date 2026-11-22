@@ -1,6 +1,6 @@
 ---
 layout: default
-kicker: "/ улика 09"
+kicker: "/ дело №9 · цитаты и плагиат"
 clicks: 3
 ---
 
