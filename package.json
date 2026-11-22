@@ -10,8 +10,8 @@
     "build:pages": "slidev build --base /pavel-composer-mskcss/ --router-mode hash --without-notes"
   },
   "dependencies": {
-    "@slidev/cli": "^52.6.0",
-    "vue": "^3.5.22"
+    "@slidev/cli": "^53.1.0",
+    "vue": "^3.5.46"
   },
-  "packageManager": "pnpm@12.18.0"
+  "packageManager": "pnpm@12.21.0"
 }
