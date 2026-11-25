@@ -26,14 +26,9 @@ CLIPS=(
   "lhomme-arme|L'Homme Arme.mp4|3.1|0"
   "de-la-rue-agnus|Pierre de la Rue_ Missa l'Homme arme, Agnus dei (with 4v prolation canon).mp4|11|120"
   "palestrina-lhomme-arme|Palestrina_ Missa L'Homme Armé.mp4|0.9|120"
-  "bach-prelude-c|Prelude and Fugue_ No. 1 in C Major, BWV 846.mp4|2|115"     # только прелюдия, фуга с 1:59
-  "ave-maria-bartoli|(1.6.) Ave Maria. Бах-Гуно. Бартоли.mp4|11|0"            # 720p; версия Ковалевой — 480p, 1967
-  "myaskovsky-carmagnole|Nikolai Myaskovsky - Symphony No. 6, Op. 23 (1923).mp4|2793.3|56.7"   # 46:32–47:30
-  "myaskovsky-ca-ira|Nikolai Myaskovsky - Symphony No. 6, Op. 23 (1923).mp4|2850|60"       # с 47:30, длина assumed
   "figaro-non-piu-andrai|Le Nozze di Figaro - Terfel, Hagley, Gilfry, Martinpelto - Gardiner _ DEU, ENG,.mp4|2470|221"   # 41:10–44:51
   "don-giovanni-figaro|Mozart - Don Giovanni - Cesare Siepi - Wilhelm Furtwängler - Vienna Philharmonic.mp4|9350|82"   # 2:35:50–2:37:12
   "tchaikovsky-4-mravinsky|П.И.Чайковский. Симфония №4, часть четвёртая. Дирижирует Евгений Мравинский. Зап.mp4|0|300"   # первые 5 минут
-  "myaskovsky-spiritual|Nikolai Myaskovsky - Symphony No. 6, Op. 23 (1923).mp4|3550|0"     # 59:10 и до конца
 )
 
 for row in "${CLIPS[@]}"; do

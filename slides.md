@@ -89,22 +89,25 @@ src: ./pages/6_cinema.md
 ---
 
 ---
-layout: statement
-seed: 5
-tags: ["плагиат", "цитата", "аллюзия", "случайность"]
+layout: end
+qr: /qr/telegram.svg
+qrCaption: "Канал Павла: t.me/TchaiKompsky"
+sticker: "дела:\nзакрыты"
 ---
 
-Вердикт: музыка —<br>это [сеть гиперссылок]{.accent}
+# Вердикт: музыка&nbsp;— это [сеть гиперссылок]{.accent}
 
 <p class="verdict-quote">Гиперссылка — не&nbsp;всегда плагиат, а&nbsp;иногда окно в&nbsp;другие миры и&nbsp;смыслы</p>
 
 <style scoped>
-.mc-statement__text .verdict-quote {
-  /* нижний отступ поднимает центрированный блок над кучкой тегов в правом углу */
-  max-width: 34rem;
-  margin: 2rem auto 6rem;
-  font: 400 1.75rem/1.3 var(--mc-font-text);
-  letter-spacing: 0;
+.mc-end__body h1 {
+  font-size: 3.25rem;
+  line-height: 1.05;
+}
+
+.mc-end__body .verdict-quote {
+  margin: 1.5rem 0 0;
+  font: 400 1.5rem/1.3 var(--mc-font-text);
 }
 </style>
 
@@ -113,5 +116,5 @@ tags: ["плагиат", "цитата", "аллюзия", "случайност
 
 Гиперссылка — не всегда плагиат, а иногда окно в другие миры и смыслы.
 
-Все дела закрыты. Спасибо! Готов ответить на вопросы.
+Все дела закрыты. Спасибо! QR на экране ведёт в мой телеграм-канал. Готов ответить на вопросы.
 -->

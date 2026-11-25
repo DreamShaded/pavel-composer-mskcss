@@ -1,6 +1,6 @@
 ---
 layout: default
-kicker: "/ дело №8 · цитаты и смерть"
+kicker: "/ дело №6 · цитаты и смерть"
 clicks: 2
 ---
 
