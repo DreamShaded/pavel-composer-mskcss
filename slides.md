@@ -95,19 +95,12 @@ qrCaption: "Канал Павла: t.me/TchaiKompsky"
 sticker: "дела:\nзакрыты"
 ---
 
-# Вердикт: музыка&nbsp;— это [сеть гиперссылок]{.accent}
-
-<p class="verdict-quote">Гиперссылка — не&nbsp;всегда плагиат, а&nbsp;иногда окно в&nbsp;другие миры и&nbsp;смыслы</p>
+# Гиперссылка — не&nbsp;всегда плагиат, а&nbsp;иногда [окно в&nbsp;другие миры и&nbsp;смыслы]{.accent}
 
 <style scoped>
 .mc-end__body h1 {
   font-size: 3.25rem;
   line-height: 1.05;
-}
-
-.mc-end__body .verdict-quote {
-  margin: 1.5rem 0 0;
-  font: 400 1.5rem/1.3 var(--mc-font-text);
 }
 </style>
 
