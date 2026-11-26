@@ -1,3 +1,49 @@
+<script lang="ts">
+interface PreloadItem {
+  el: HTMLVideoElement
+  url: string
+  page: number
+  index: number
+  done: boolean
+}
+
+const PRELOAD_TIMEOUT_MS = 60_000
+const preloadItems = new Set<PreloadItem>()
+let preloadSlide = 0
+let preloadBusy = false
+
+function startLoading(item: PreloadItem) {
+  if (!item.el.getAttribute('src')) {
+    item.el.src = item.url
+    item.el.load()
+  }
+}
+
+// Берём ближайший нескачанный клип на текущем слайде или дальше и ждём, пока браузер
+// наберёт буфер (canplaythrough) или сам остановит загрузку (suspend); ошибка или таймаут
+// не блокируют очередь.
+function pumpPreload() {
+  if (preloadBusy) return
+  const next = [...preloadItems]
+    .filter(i => !i.done && i.page >= preloadSlide)
+    .sort((a, b) => (a.page - b.page) || (a.index - b.index))[0]
+  if (!next) return
+  preloadBusy = true
+  const events = ['canplaythrough', 'suspend', 'error'] as const
+  const finish = () => {
+    events.forEach(e => next.el.removeEventListener(e, finish))
+    clearTimeout(timer)
+    next.done = true
+    preloadBusy = false
+    pumpPreload()
+  }
+  const timer = setTimeout(finish, PRELOAD_TIMEOUT_MS)
+  events.forEach(e => next.el.addEventListener(e, finish))
+  startLoading(next)
+  if (next.el.readyState >= 4) finish()
+}
+</script>
+
 <script setup lang="ts">
 // Патефон-проигрыватель для музыкальных фрагментов.
 //
@@ -11,9 +57,11 @@
 // Управление — кликами Slidev. Трек i играет, когда $clicks === at + i; клик после последнего трека
 // возвращает патефон в угол. В frontmatter слайда нужно `clicks: at + tracks.length`.
 //
-// Предзагрузка: у каждого трека свой <video preload="auto">. src им выдаётся, когда до слайда
-// остаётся один шаг (открыт предыдущий слайд) или когда открыт сам слайд, — к клику клип уже в буфере.
-import { computed, onBeforeUnmount, ref, useId, watch } from 'vue'
+// Предзагрузка: у каждого трека свой <video>. Все патефоны колоды делят одну очередь загрузки
+// (модульный <script> ниже): клипы качаются по одному, чтобы не делить канал, в порядке
+// «текущий слайд → следующие», внутри слайда — по порядку треков. Клик по ещё не скачанному
+// треку грузит его сразу, вне очереди.
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
 import { onSlideEnter, onSlideLeave, useSlideContext } from '@slidev/client'
 
 interface Track {
@@ -45,16 +93,28 @@ const record = ref<HTMLElement>()
 const screen = ref<HTMLElement>()
 const veil = ref<HTMLElement>()
 const videos = ref<HTMLVideoElement[]>([])
+const myItems: PreloadItem[] = []
 
-// Грузим клипы заранее: с предыдущего слайда или с этого. Один раз включив, не выключаем —
-// уже скачанное пригодится при возврате на слайд.
-const PRELOAD_AHEAD = 1
-const armed = ref(false)
-watch(
-  () => isLive.value && $nav.value.currentSlideNo >= $page.value - PRELOAD_AHEAD && $nav.value.currentSlideNo <= $page.value,
-  (near) => { if (near) armed.value = true },
-  { immediate: true },
-)
+// Встаём в общую очередь загрузки только в живом показе (не в обзоре, превью и экспорте).
+onMounted(async () => {
+  if (!isLive.value) return
+  await nextTick()
+  props.tracks.forEach((t, index) => {
+    const el = videos.value[index]
+    if (!el) return
+    const item: PreloadItem = { el, url: assetUrl(t.src), page: $page.value, index, done: false }
+    myItems.push(item)
+    preloadItems.add(item)
+  })
+  pumpPreload()
+})
+onBeforeUnmount(() => myItems.forEach(i => preloadItems.delete(i)))
+
+watch(() => $nav.value.currentSlideNo, (no) => {
+  if (!isLive.value || no === preloadSlide) return
+  preloadSlide = no
+  pumpPreload()
+}, { immediate: true })
 
 const current = ref(-1) // какой трек сейчас на патефоне
 const spinning = ref(false)
@@ -127,11 +187,14 @@ async function toCorner() {
 }
 
 async function putRecord(i: number, gen: number) {
-  armed.value = true
   current.value = i
   const v = videos.value[i]
-  if (v)
+  if (v) {
     v.muted = isMuted.value
+    const item = myItems[i]
+    if (item) startLoading(item) // клик раньше очереди — грузим сразу
+    else if (!v.getAttribute('src')) { v.src = assetUrl(props.tracks[i].src); v.load() }
+  }
   await animate(record.value, [
     { opacity: 0, transform: 'translateY(-10rem)' },
     { opacity: 1, transform: 'translateY(0)' },
@@ -267,7 +330,6 @@ onBeforeUnmount(reset)
         :key="t.src"
         :ref="(el) => { if (el) videos[i] = el as HTMLVideoElement }"
         class="gramo__video"
-        :src="armed ? assetUrl(t.src) : undefined"
         playsinline
         preload="auto"
       />
