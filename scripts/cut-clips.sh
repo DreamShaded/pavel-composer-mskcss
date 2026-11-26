@@ -28,7 +28,8 @@ CLIPS=(
   "palestrina-lhomme-arme|Palestrina_ Missa L'Homme Armé.mp4|0.9|120"
   "figaro-non-piu-andrai|Le Nozze di Figaro - Terfel, Hagley, Gilfry, Martinpelto - Gardiner _ DEU, ENG,.mp4|2470|221"   # 41:10–44:51
   "don-giovanni-figaro|Mozart - Don Giovanni - Cesare Siepi - Wilhelm Furtwängler - Vienna Philharmonic.mp4|9350|82"   # 2:35:50–2:37:12
-  "tchaikovsky-4-mravinsky|П.И.Чайковский. Симфония №4, часть четвёртая. Дирижирует Евгений Мравинский. Зап.mp4|0|300"   # первые 5 минут
+  "tchaikovsky-4-mravinsky-1|П.И.Чайковский. Симфония №4, часть четвёртая. Дирижирует Евгений Мравинский. Зап.mp4|0|230"   # 0:00–3:50
+  "tchaikovsky-4-mravinsky-2|П.И.Чайковский. Симфония №4, часть четвёртая. Дирижирует Евгений Мравинский. Зап.mp4|230|70"  # 3:50–5:00
 )
 
 for row in "${CLIPS[@]}"; do
