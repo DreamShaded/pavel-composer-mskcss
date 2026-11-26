@@ -1,46 +1,43 @@
 <script lang="ts">
+// Общая очередь предзагрузки для всех патефонов колоды. Клип скачивается целиком через fetch
+// и отдаётся плееру как blob: URL — к клику он уже в памяти, сеть при воспроизведении не нужна.
+// Почему не <video preload="auto">: на Pages такие фоновые загрузки мешали друг другу —
+// клип после клика по 10+ секунд стоял без первых байтов при свободном канале.
 interface PreloadItem {
-  el: HTMLVideoElement
   url: string
   page: number
   index: number
-  done: boolean
 }
 
-const PRELOAD_TIMEOUT_MS = 60_000
+const blobUrls = new Map<string, string>() // url клипа → blob: URL
+const failed = new Set<string>()
 const preloadItems = new Set<PreloadItem>()
 let preloadSlide = 0
 let preloadBusy = false
 
-function startLoading(item: PreloadItem) {
-  if (!item.el.getAttribute('src')) {
-    item.el.src = item.url
-    item.el.load()
-  }
+async function fetchClip(url: string) {
+  const res = await fetch(url)
+  if (!res.ok) throw new Error(`HTTP ${res.status}`)
+  blobUrls.set(url, URL.createObjectURL(await res.blob()))
 }
 
-// Берём ближайший нескачанный клип на текущем слайде или дальше и ждём, пока браузер
-// наберёт буфер (canplaythrough) или сам остановит загрузку (suspend); ошибка или таймаут
-// не блокируют очередь.
-function pumpPreload() {
+// Один клип за раз: ближайший слайд от текущего, внутри слайда — по порядку треков.
+async function pumpPreload() {
   if (preloadBusy) return
   const next = [...preloadItems]
-    .filter(i => !i.done && i.page >= preloadSlide)
+    .filter(i => i.page >= preloadSlide && !blobUrls.has(i.url) && !failed.has(i.url))
     .sort((a, b) => (a.page - b.page) || (a.index - b.index))[0]
   if (!next) return
   preloadBusy = true
-  const events = ['canplaythrough', 'suspend', 'error'] as const
-  const finish = () => {
-    events.forEach(e => next.el.removeEventListener(e, finish))
-    clearTimeout(timer)
-    next.done = true
-    preloadBusy = false
-    pumpPreload()
+  try {
+    await fetchClip(next.url)
   }
-  const timer = setTimeout(finish, PRELOAD_TIMEOUT_MS)
-  events.forEach(e => next.el.addEventListener(e, finish))
-  startLoading(next)
-  if (next.el.readyState >= 4) finish()
+  catch (err) {
+    failed.add(next.url) // не блокируем очередь; плеер возьмёт клип из сети
+    console.warn('[Gramophone] preload failed', next.url, err)
+  }
+  preloadBusy = false
+  pumpPreload()
 }
 </script>
 
@@ -57,11 +54,12 @@ function pumpPreload() {
 // Управление — кликами Slidev. Трек i играет, когда $clicks === at + i; клик после последнего трека
 // возвращает патефон в угол. В frontmatter слайда нужно `clicks: at + tracks.length`.
 //
-// Предзагрузка: у каждого трека свой <video>. Все патефоны колоды делят одну очередь загрузки
-// (модульный <script> ниже): клипы качаются по одному, чтобы не делить канал, в порядке
-// «текущий слайд → следующие», внутри слайда — по порядку треков. Клик по ещё не скачанному
-// треку грузит его сразу, вне очереди.
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
+// Предзагрузка: все патефоны колоды делят одну очередь (модульный <script> выше). Клипы
+// скачиваются по одному, в порядке «текущий слайд → следующие», внутри слайда — по порядку
+// треков. Если клип не успел скачаться к клику, плеер играет его прямо из сети.
+// Качает и играет видео только окно показа; в окне презентера патефон крутится без видео,
+// чтобы не делить канал со зрительским окном.
+import { computed, onBeforeUnmount, onMounted, ref, useId, watch } from 'vue'
 import { onSlideEnter, onSlideLeave, useSlideContext } from '@slidev/client'
 
 interface Track {
@@ -86,6 +84,7 @@ const woodId = `gramo-wood-${uid}`
 // в превью/обзоре/экспорте — статичный патефон в углу.
 const isLive = computed(() => !$nav.value.isPrintMode && ($renderContext.value === 'slide' || $renderContext.value === 'presenter'))
 const isMuted = computed(() => $renderContext.value !== 'slide')
+const isAudience = computed(() => isLive.value && $renderContext.value === 'slide')
 
 const root = ref<HTMLElement>()
 const deck = ref<HTMLElement>()
@@ -95,14 +94,10 @@ const veil = ref<HTMLElement>()
 const videos = ref<HTMLVideoElement[]>([])
 const myItems: PreloadItem[] = []
 
-// Встаём в общую очередь загрузки только в живом показе (не в обзоре, превью и экспорте).
-onMounted(async () => {
-  if (!isLive.value) return
-  await nextTick()
+onMounted(() => {
+  if (!isAudience.value) return
   props.tracks.forEach((t, index) => {
-    const el = videos.value[index]
-    if (!el) return
-    const item: PreloadItem = { el, url: assetUrl(t.src), page: $page.value, index, done: false }
+    const item: PreloadItem = { url: assetUrl(t.src), page: $page.value, index }
     myItems.push(item)
     preloadItems.add(item)
   })
@@ -111,7 +106,7 @@ onMounted(async () => {
 onBeforeUnmount(() => myItems.forEach(i => preloadItems.delete(i)))
 
 watch(() => $nav.value.currentSlideNo, (no) => {
-  if (!isLive.value || no === preloadSlide) return
+  if (!isAudience.value || no === preloadSlide) return
   preloadSlide = no
   pumpPreload()
 }, { immediate: true })
@@ -189,11 +184,14 @@ async function toCorner() {
 async function putRecord(i: number, gen: number) {
   current.value = i
   const v = videos.value[i]
-  if (v) {
+  if (v && isAudience.value) {
     v.muted = isMuted.value
-    const item = myItems[i]
-    if (item) startLoading(item) // клик раньше очереди — грузим сразу
-    else if (!v.getAttribute('src')) { v.src = assetUrl(props.tracks[i].src); v.load() }
+    const url = assetUrl(props.tracks[i].src)
+    const src = blobUrls.get(url) ?? url // не успели скачать — играем из сети
+    if (v.getAttribute('src') !== src) {
+      v.src = src
+      v.load()
+    }
   }
   await animate(record.value, [
     { opacity: 0, transform: 'translateY(-10rem)' },
@@ -201,7 +199,7 @@ async function putRecord(i: number, gen: number) {
   ], 500, EASE_OUT)
   if (gen !== generation) return
   spinning.value = true
-  if (v) {
+  if (v && isAudience.value) {
     await waitForPlayable(v)
     if (gen !== generation) return
     v.currentTime = 0
