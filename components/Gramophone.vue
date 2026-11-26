@@ -10,6 +10,9 @@
 //
 // Управление — кликами Slidev. Трек i играет, когда $clicks === at + i; клик после последнего трека
 // возвращает патефон в угол. В frontmatter слайда нужно `clicks: at + tracks.length`.
+//
+// Предзагрузка: у каждого трека свой <video preload="auto">. src им выдаётся, когда до слайда
+// остаётся один шаг (открыт предыдущий слайд) или когда открыт сам слайд, — к клику клип уже в буфере.
 import { computed, onBeforeUnmount, ref, useId, watch } from 'vue'
 import { onSlideEnter, onSlideLeave, useSlideContext } from '@slidev/client'
 
@@ -24,7 +27,7 @@ const props = withDefaults(defineProps<{
   at?: number
 }>(), { at: 1 })
 
-const { $clicks, $renderContext, $nav } = useSlideContext()
+const { $clicks, $renderContext, $nav, $page } = useSlideContext()
 
 // Патефонов в колоде несколько, а id градиентов в SVG глобальны на документ — делаем уникальными.
 const uid = useId()
@@ -41,7 +44,17 @@ const deck = ref<HTMLElement>()
 const record = ref<HTMLElement>()
 const screen = ref<HTMLElement>()
 const veil = ref<HTMLElement>()
-const video = ref<HTMLVideoElement>()
+const videos = ref<HTMLVideoElement[]>([])
+
+// Грузим клипы заранее: с предыдущего слайда или с этого. Один раз включив, не выключаем —
+// уже скачанное пригодится при возврате на слайд.
+const PRELOAD_AHEAD = 1
+const armed = ref(false)
+watch(
+  () => isLive.value && $nav.value.currentSlideNo >= $page.value - PRELOAD_AHEAD && $nav.value.currentSlideNo <= $page.value,
+  (near) => { if (near) armed.value = true },
+  { immediate: true },
+)
 
 const current = ref(-1) // какой трек сейчас на патефоне
 const spinning = ref(false)
@@ -114,13 +127,11 @@ async function toCorner() {
 }
 
 async function putRecord(i: number, gen: number) {
+  armed.value = true
   current.value = i
-  const v = video.value
-  if (v) {
-    v.src = assetUrl(props.tracks[i].src)
+  const v = videos.value[i]
+  if (v)
     v.muted = isMuted.value
-    v.load()
-  }
   await animate(record.value, [
     { opacity: 0, transform: 'translateY(-10rem)' },
     { opacity: 1, transform: 'translateY(0)' },
@@ -138,7 +149,7 @@ async function putRecord(i: number, gen: number) {
 
 async function liftRecord() {
   await animate(screen.value, [{ clipPath: IRIS_OPEN }, { clipPath: IRIS_CLOSED }], 800, EASE_IN_OUT)
-  video.value?.pause()
+  pauseAll()
   spinning.value = false
   await animate(record.value, [
     { opacity: 1, transform: 'translateY(0)' },
@@ -173,6 +184,11 @@ function request() {
   queue = queue.then(() => apply(gen))
 }
 
+function pauseAll() {
+  for (const v of videos.value)
+    v?.pause()
+}
+
 // Мгновенный сброс: ушли со слайда — тишина и патефон в углу.
 function reset() {
   generation++
@@ -185,7 +201,7 @@ function reset() {
     record.value.style.transform = 'translateY(-10rem)'
   }
   if (screen.value) screen.value.style.clipPath = IRIS_CLOSED
-  video.value?.pause()
+  pauseAll()
   spinning.value = false
   current.value = -1
   inCenter = false
@@ -193,7 +209,7 @@ function reset() {
 }
 
 watch(target, request)
-watch(isMuted, (m) => { if (video.value) video.value.muted = m })
+watch(isMuted, (m) => { for (const v of videos.value) if (v) v.muted = m })
 onSlideEnter(() => request())
 onSlideLeave(() => reset())
 onBeforeUnmount(reset)
@@ -245,7 +261,16 @@ onBeforeUnmount(reset)
     </div>
 
     <div ref="screen" class="gramo__screen">
-      <video ref="video" class="gramo__video" playsinline preload="auto" />
+      <video
+        v-for="(t, i) in tracks"
+        v-show="i === current"
+        :key="t.src"
+        :ref="(el) => { if (el) videos[i] = el as HTMLVideoElement }"
+        class="gramo__video"
+        :src="armed ? assetUrl(t.src) : undefined"
+        playsinline
+        preload="auto"
+      />
       <span v-if="track" class="gramo__caption">♪ {{ track.label }}</span>
     </div>
   </div>
